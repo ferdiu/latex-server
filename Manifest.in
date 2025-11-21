@@ -1,0 +1,19 @@
+# Include package metadata and documentation
+include README.md
+include LICENSE
+include pyproject.toml
+
+# Include type information
+include latex_server/py.typed
+
+# Exclude test files and development artifacts
+exclude tests/*
+exclude .gitignore
+exclude docker-compose.yml
+exclude Dockerfile
+
+# Exclude build artifacts
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
+global-exclude .DS_Store

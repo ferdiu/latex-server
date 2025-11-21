@@ -1,0 +1,11 @@
+.gitignore
+Makefile
+Manifest.in
+SETUP.md
+tests/
+.pytest_cache
+.vscode
+build
+**/__pycache__/
+*.egg-info
+venv/
