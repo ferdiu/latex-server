@@ -96,8 +96,8 @@ Summary: %{summary}
 
 ### Systemd service ###
 
-install -d %{buildroot}%{_unitdir}
-cat > %{buildroot}%{_unitdir}/latex-server.service << 'EOF'
+install -d %{buildroot}/usr/lib/systemd/system
+cat > %{buildroot}/usr/lib/systemd/system/latex-server.service << 'EOF'
 [Unit]
 Description=LaTeX Compilation Server
 After=network-online.target
@@ -152,8 +152,8 @@ EOF
 
 ### tmpfiles.d ###
 
-install -d %{buildroot}%{_tmpfilesdir}
-cat > %{buildroot}%{_tmpfilesdir}/latex-server.conf << 'EOF'
+install -d %{buildroot}/usr/lib/tmpfiles.d
+cat > %{buildroot}/usr/lib/tmpfiles.d/latex-server.conf << 'EOF'
 d /var/lib/latex-server - - - -
 d /var/cache/latex-server - - - -
 d /var/log/latex-server - - - -
@@ -206,8 +206,8 @@ EOF
 
 %files -n python3-latex-server -f %{pyproject_files}
 %{_bindir}/latex-server
-%{_unitdir}/latex-server.service
-%{_tmpfilesdir}/latex-server.conf
+/usr/lib/systemd/system/latex-server.service
+/usr/lib/tmpfiles.d/latex-server.conf
 %dir %{_sysconfdir}/latex-server
 %config(noreplace) %{_sysconfdir}/latex-server/config.env
 %doc README.md SETUP.md
