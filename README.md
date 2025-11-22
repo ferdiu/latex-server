@@ -2,6 +2,8 @@
 
 A production-ready FastAPI-based HTTP server that compiles LaTeX documents to PDF. Built on top of [kjarosh/latex-docker](https://github.com/kjarosh/latex-docker), this server handles complex compilation scenarios including multiple passes for table of contents, bibliographies, and cross-references.
 
+See the client that can be used to monitor changes in a directory to automatically send to this server the files to recompile them on change [here](https://github.com/ferdiu/latex-server-client).
+
 ## Features
 
 - **Multiple Compilation Passes**: Automatically detects and performs multiple LaTeX passes for TOC, cross-references, and labels
