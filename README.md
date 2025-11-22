@@ -29,7 +29,7 @@ pip install -e ".[dev]"
 
 ```bash
 docker build -t latex-server .
-docker run -p 8000:8000 latex-server
+docker run -p 9080:9080 latex-server
 ```
 
 ## Quick Start
@@ -61,7 +61,7 @@ docker-compose up
 ### Testing the Server
 
 ```bash
-curl http://localhost:8000/
+curl http://localhost:9080/
 ```
 
 Expected response:
@@ -124,7 +124,7 @@ Compiles a LaTeX document to PDF with automatic handling of multiple compilation
 ### Simple Document
 
 ```bash
-curl -X POST http://localhost:8000/compile \
+curl -X POST http://localhost:9080/compile \
   -H "Content-Type: application/json" \
   -d '{
     "main": "\\documentclass{article}\n\\begin{document}\nHello, World!\n\\end{document}"
@@ -134,7 +134,7 @@ curl -X POST http://localhost:8000/compile \
 ### Document with Table of Contents
 
 ```bash
-curl -X POST http://localhost:8000/compile \
+curl -X POST http://localhost:9080/compile \
   -H "Content-Type: application/json" \
   -d '{
     "main": "\\documentclass{article}\n\\begin{document}\n\\tableofcontents\n\\section{Introduction}\nText here.\n\\end{document}"
@@ -144,7 +144,7 @@ curl -X POST http://localhost:8000/compile \
 ### Multi-file Project with Bibliography
 
 ```bash
-curl -X POST http://localhost:8000/compile \
+curl -X POST http://localhost:9080/compile \
   -H "Content-Type: application/json" \
   -d '{
     "main": "\\documentclass{article}\n\\begin{document}\n\\input{content.tex}\n\\cite{example}\n\\bibliographystyle{plain}\n\\bibliography{refs}\n\\end{document}",
@@ -173,7 +173,7 @@ This is a test document.
 
 # Send compilation request
 response = requests.post(
-    "http://localhost:8000/compile",
+    "http://localhost:9080/compile",
     json=latex_files
 )
 

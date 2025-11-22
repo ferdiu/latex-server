@@ -11,10 +11,13 @@ __email__ = "ferdiu.manzella@gmail.com"
 from latex_server.app import app
 from latex_server.compiler import LaTeXCompiler
 from latex_server.models import CompilationRequest, CompilationResponse
+from latex_server.latex_watch import LatexWatcher, LatexIgnore
 
 __all__ = [
     "app",
     "LaTeXCompiler",
     "CompilationRequest",
     "CompilationResponse",
+    "LatexWatcher",
+    "LatexIgnore",
 ]

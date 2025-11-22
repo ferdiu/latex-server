@@ -84,6 +84,28 @@ This is content from another file.
         data = response.json()
         assert len(data["file"]) > 0
 
+
+    def test_document_with_additional_file_in_subdir(self, client: TestClient) -> None:
+        """Test compilation with additional files in a subdirectory."""
+        main_content = r"""
+\documentclass{article}
+\begin{document}
+\input{subdir/content.tex}
+\end{document}
+"""
+
+        content_file = r"""
+This is content from another file.
+"""
+
+        response = client.post(
+            "/compile", json={"main": main_content, "files": {"subdir/content.tex": content_file}}
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["file"]) > 0
+
     def test_document_with_toc(self, client: TestClient) -> None:
         """Test compilation with table of contents (requires multiple passes)."""
         latex_content = r"""
