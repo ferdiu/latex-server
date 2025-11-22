@@ -71,7 +71,7 @@ Expected response:
 {
   "status": "ok",
   "service": "LaTeX Compilation Server",
-  "version": "1.0.3"
+  "version": "2.0.0"
 }
 ```
 
@@ -286,7 +286,7 @@ The server automatically detects when additional compilation passes are needed b
 ### Environment Variables
 
 - `LATEX_SERVER_HOST`: Server host (default: `0.0.0.0`)
-- `LATEX_SERVER_PORT`: Server port (default: `8000`)
+- `LATEX_SERVER_PORT`: Server port (default: `9080`)
 - `LATEX_SERVER_LOG_LEVEL`: Logging level (default: `INFO`)
 - `LATEX_SERVER_MAX_COMPILATIONS`: Maximum compilation passes (default: `5`)
 - `LATEX_SERVER_COMMAND_TIMEOUT`: Command timeout in seconds (default: `60`)

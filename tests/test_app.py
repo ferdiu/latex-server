@@ -64,7 +64,7 @@ Hello, World!
         assert pdf_bytes.startswith(b"%PDF")  # PDF magic number
 
     def test_document_with_additional_files(self, client: TestClient) -> None:
-        """Test compilation with additional files."""
+        """Test compilation with additional files (backward compatible format)."""
         main_content = r"""
 \documentclass{article}
 \begin{document}
@@ -72,34 +72,50 @@ Hello, World!
 \end{document}
 """
 
-        content_file = r"""
-This is content from another file.
-"""
-
         response = client.post(
-            "/compile", json={"main": main_content, "files": {"content.tex": content_file}}
+            "/compile",
+            json={
+                "main": main_content,
+                "files": {
+                    "content.tex": {
+                        "data": "This is content from another file.",
+                        "binary": False
+                    }
+                }
+            }
         )
 
         assert response.status_code == 200
         data = response.json()
         assert len(data["file"]) > 0
 
+    def test_document_with_binary_file(self, client: TestClient) -> None:
+        """Test compilation with binary file (image)."""
+        # 1x1 pixel red PNG image (base64 encoded)
+        red_pixel_png = (
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx"
+            "0gAAAABJRU5ErkJggg=="
+        )
 
-    def test_document_with_additional_file_in_subdir(self, client: TestClient) -> None:
-        """Test compilation with additional files in a subdirectory."""
         main_content = r"""
 \documentclass{article}
+\usepackage{graphicx}
 \begin{document}
-\input{subdir/content.tex}
+\includegraphics{test.png}
 \end{document}
 """
 
-        content_file = r"""
-This is content from another file.
-"""
-
         response = client.post(
-            "/compile", json={"main": main_content, "files": {"subdir/content.tex": content_file}}
+            "/compile",
+            json={
+                "main": main_content,
+                "files": {
+                    "test.png": {
+                        "data": red_pixel_png,
+                        "binary": True
+                    }
+                }
+            }
         )
 
         assert response.status_code == 200
@@ -148,7 +164,18 @@ This is a citation \cite{example}.
 }
 """
 
-        response = client.post("/compile", json={"main": main_content, "refs.bib": bib_content})
+        response = client.post(
+            "/compile",
+            json={
+                "main": main_content,
+                "files": {
+                    "refs.bib": {
+                        "data": bib_content,
+                        "binary": False
+                    }
+                }
+            }
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -205,11 +232,11 @@ class TestLaTeXCompiler:
     def test_compile_simple_document(self, compiler: LaTeXCompiler) -> None:
         """Test compilation of a simple document."""
         files = {
-            "main.tex": r"""
-\documentclass{article}
-\begin{document}
+            "main.tex": b"""
+\\documentclass{article}
+\\begin{document}
 Test document.
-\end{document}
+\\end{document}
 """
         }
 
@@ -222,7 +249,7 @@ Test document.
 
     def test_compile_without_main_tex(self, compiler: LaTeXCompiler) -> None:
         """Test compilation without main.tex file."""
-        files = {"other.tex": "content"}
+        files = {"other.tex": b"content"}
 
         with pytest.raises(ValueError, match="main.tex must be provided"):
             compiler.compile(files)
@@ -230,16 +257,42 @@ Test document.
     def test_compile_with_subdirectory(self, compiler: LaTeXCompiler) -> None:
         """Test compilation with files in subdirectories."""
         files = {
-            "main.tex": r"""
-\documentclass{article}
-\begin{document}
-\input{chapters/chapter1.tex}
-\end{document}
+            "main.tex": b"""
+\\documentclass{article}
+\\begin{document}
+\\input{chapters/chapter1.tex}
+\\end{document}
 """,
-            "chapters/chapter1.tex": r"""
-\section{Chapter 1}
+            "chapters/chapter1.tex": b"""
+\\section{Chapter 1}
 This is chapter 1.
 """,
+        }
+
+        pdf_bytes, log = compiler.compile(files)
+
+        assert pdf_bytes is not None
+        assert len(pdf_bytes) > 0
+
+    def test_compile_with_binary_image(self, compiler: LaTeXCompiler) -> None:
+        """Test compilation with binary image file."""
+        import base64
+
+        # 1x1 pixel red PNG (decoded for storage)
+        red_pixel_png = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx"
+            "0gAAAABJRU5ErkJggg=="
+        )
+
+        files = {
+            "main.tex": b"""
+\\documentclass{article}
+\\usepackage{graphicx}
+\\begin{document}
+\\includegraphics{test.png}
+\\end{document}
+""",
+            "test.png": red_pixel_png,
         }
 
         pdf_bytes, log = compiler.compile(files)
@@ -257,18 +310,59 @@ class TestRequestModel:
         files = request.get_all_files()
 
         assert "main.tex" in files
-        assert files["main.tex"] == "content"
+        assert files["main.tex"] == b"content"
 
-    def test_get_all_files_with_additional_fields(self) -> None:
-        """Test getting files with additional fields."""
+    def test_get_all_files_with_text_files(self) -> None:
+        """Test getting files with text content in new format."""
         request = CompilationRequest(
-            main="main content", files={"file1.tex": "content1", "file2.tex": "content2"}
+            main="main content",
+            files={
+                "file1.tex": {"data": "content1", "binary": False},
+                "file2.tex": {"data": "content2", "binary": False}
+            }
         )
         files = request.get_all_files()
 
         assert "main.tex" in files
         assert "file1.tex" in files
         assert "file2.tex" in files
+        assert files["file1.tex"] == b"content1"
+        assert files["file2.tex"] == b"content2"
+
+    def test_get_all_files_with_binary_files(self) -> None:
+        """Test getting files with binary content."""
+        import base64
+
+        # Create a simple binary content
+        binary_data = b"\x89PNG\r\n\x1a\n"
+        encoded_data = base64.b64encode(binary_data).decode("ascii")
+
+        request = CompilationRequest(
+            main="main content",
+            files={
+                "image.png": {"data": encoded_data, "binary": True}
+            }
+        )
+        files = request.get_all_files()
+
+        assert "image.png" in files
+        assert files["image.png"] == binary_data
+
+    def test_backward_compatibility_string_files(self) -> None:
+        """Test backward compatibility with string values."""
+        request = CompilationRequest(
+            main="main content",
+            files={
+                "file1.tex": "content1",
+                "file2.tex": "content2"
+            }
+        )
+        files = request.get_all_files()
+
+        assert "file1.tex" in files
+        assert "file2.tex" in files
+        assert files["file1.tex"] == b"content1"
+        assert files["file2.tex"] == b"content2"
 
 
 class TestEdgeCases:

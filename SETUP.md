@@ -206,14 +206,14 @@ pip install build
 python -m build
 
 # This creates:
-# - dist/latex_server-1.0.3-py3-none-any.whl
-# - dist/latex-server-1.0.3.tar.gz
+# - dist/latex_server-2.0.0-py3-none-any.whl
+# - dist/latex-server-2.0.0.tar.gz
 ```
 
 ### Installing from Built Package
 
 ```bash
-pip install dist/latex_server-1.0.3-py3-none-any.whl
+pip install dist/latex_server-2.0.0-py3-none-any.whl
 ```
 
 ### Publishing to PyPI (when ready)

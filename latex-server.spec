@@ -1,5 +1,5 @@
 Name:           latex-server
-Version:        1.0.3
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        FastAPI-based HTTP server for compiling LaTeX documents to PDF
 
@@ -214,6 +214,9 @@ EOF
 
 
 %changelog
+* Sat Nov 22 2025 Federico Manzella <ferdiu.manzella@gmail.com> - 2.0.0-1
+- Update protocol to support binary files
+
 * Sat Nov 22 2025 Federico Manzella <ferdiu.manzella@gmail.com> - 1.0.3-1
 - Initial RPM release
 - Added tmpfiles.d persistent state directories

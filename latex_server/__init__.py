@@ -4,7 +4,7 @@ LaTeX Compilation Server
 A FastAPI-based HTTP server for compiling LaTeX documents to PDF.
 """
 
-__version__ = "1.0.3"
+__version__ = "2.0.0"
 __author__ = "Federico Manzella"
 __email__ = "ferdiu.manzella@gmail.com"
 

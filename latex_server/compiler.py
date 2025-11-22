@@ -137,12 +137,12 @@ class LaTeXCompiler:
 
         return exit_code, log_content
 
-    def compile(self, files: Dict[str, str]) -> Tuple[Optional[bytes], str]:
+    def compile(self, files: Dict[str, bytes]) -> Tuple[Optional[bytes], str]:
         """
         Compile LaTeX document with all necessary passes.
 
         Args:
-            files: Dictionary mapping file paths to their content
+            files: Dictionary mapping file paths to their content as bytes
 
         Returns:
             Tuple of (pdf_bytes, full_log)
@@ -165,7 +165,8 @@ class LaTeXCompiler:
             for file_path, content in files.items():
                 file_full_path = work_dir / file_path
                 file_full_path.parent.mkdir(parents=True, exist_ok=True)
-                file_full_path.write_text(content, encoding="utf-8")
+                # Write as binary to support both text and binary files
+                file_full_path.write_bytes(content)
                 logger.debug(f"Written file: {file_path}")
 
             # First compilation pass
