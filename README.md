@@ -71,7 +71,7 @@ Expected response:
 {
   "status": "ok",
   "service": "LaTeX Compilation Server",
-  "version": "1.0.0"
+  "version": "1.0.2"
 }
 ```
 
